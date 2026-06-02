@@ -1,3 +1,5 @@
+
+
 # CIAM-PORTFOLIO
 My Customer Identity and Access Management projects with multiple core use cases 
 
@@ -137,7 +139,10 @@ Build the authorization request
 
 The authorization request directs the user to the provider so they can authenticate and consent. It is an HTTP GET to the provider’s authorization endpoint with parameters such as client_id, redirect_uri, response_type=code, scope, and state. If you use PKCE, generate a code_verifier (a high-entropy random string) and send its transformed value, code_challenge, along with code_challenge_method=S256. The state parameter is used to prevent CSRF attacks,store it on the client (or server) and compare it after redirect.
 
+
+
 Authorization request example (template)
+
 GET 
 
 client_id=YOUR_CLIENT_ID
@@ -161,6 +166,7 @@ Handle the redirect and exchange the code for tokens
 After the user approves access, the provider will redirect to your redirect URI with parameters such as code and state. Verify the state matches what you issued earlier. Then exchange the authorization code for tokens by POSTing to the token endpoint. For confidential clients include the client_secret in a secure server-side request; for PKCE clients include the original code_verifier. The token response typically includes an access_token, an id_token (if using OpenID Connect), and sometimes a refresh_token.
 
 Token exchange example (curl)
+
 POST 
 
 Content-Type: application/x-www-form-urlencoded
@@ -200,8 +206,12 @@ Use your provider’s developer console to inspect registered clients and logs. 
 
 
 In Summary:
+
+
+
 -Create Your Auth0 Free Tenant like i just did with Simplytech service Company by goint to auth0.com to sign up`
-                                                                                                                                            -Click Start Building for Free or Sign Up
+
+-Click Start Building for Free or Sign Up
 
 -Sign up using your email address (not Google SSO - we want email login as the starting point. I used olowuahj@gmail.com)
 
@@ -217,5 +227,144 @@ In Summary:
 Auth0 creates your tenant automatically and takes you to the Dashboard
 
 ✅  Verify: You can see the Auth0 Dashboard at manage.auth0.com. You are logged in like i just did. mine is dev-tjzm2vfebnkrsh7w
+full name is dev-tjzm2vfebnkrsh7w.us.auth0.com . My tenant's domain is also called auth0 domain. 
 
 
+-In the Auth0 Dashboard go to Authentication in the left menu
+
+-Click Database
+
+-Click on Username-Password-Authentication (this is the default connection)
+
+-Make sure it is enabled
+
+-Scroll down - confirm Requires Username is OFF (we use email as the identifier)
+-Save if you made any changes
+
+
+
+THE USE CASES/EXAMPLES ARE:
+
+A
+
+Alex Turner  |  B2C Customer
+
+Self-registered consumer. Uses the SimplifyTech customer portal to track orders. Signed up with email. Low initial trust, builds over time through verified actions.
+Lab use case: Registration flow, Google social login, T&C consent, MFA
+
+
+B
+
+Marcus Webb Ltd  |  B2B Partner
+
+External company employee. Accesses the SimplifyTech partner portal. Uses corporate credentials. High trust established by the signed partnership agreement.
+Lab use case: SAML B2B federation concept — discussed, not configured in the lab
+
+
+C
+
+Trial User  |  Guest / Time-Limited
+
+No full account. 30-day free trial. Minimal data collected. Consent required but lightweight.
+Lab use case: Discussed as a concept. Handled via Auth0 application-level token expiry.
+
+
+
+
+in all, 
+
+
+
+
+Six scenarios you encounter on every CIAM engagement. let's Understand them before configuring anything.
+
+1. Self-Registration vs Invited User
+   
+Alex Turner self-registers. Marcus Webb Ltd employees are invited by an admin. Different flows, different trust levels, different data collected. In Auth0 these are different connections and application types.
+
+2. Social Login
+   
+Customers sign in with Google or Apple instead of creating a password. Reduces friction. Increases registration conversion. The CIAM platform creates an identity linked to the social provider. Identity linking: what happens when the same email exists in both username-password and Google social? This needs a deliberate policy decision before go-live. This is account linking, the CIAM version of correlation from Week 2: correlation stops duplicate identities for employees, account linking stops them for customers.
+
+3. Progressive Profiling
+   
+Collect email and password first. On second login ask for phone number. On fifth login ask for preferences. Auth0 Actions implement this by checking loginsCount and requesting additional fields progressively. Reduces registration dropout significantly.
+
+4. Consent and Terms & Conditions Versioning
+   
+Privacy laws across the world require that users explicitly agree to how their data will be used before you process it. T&C acceptance is both a legal requirement in most markets and a trust signal for your customers. The specific law varies by jurisdiction. The technical implementation is the same everywhere: gate access until the user has accepted, record the acceptance with a timestamp and version, and make it as easy to withdraw as it was to give.
+
+5. Account Lockout and Brute Force
+
+Without brute force protection, attackers attempt thousands of password guesses. Auth0 Attack Protection blocks this. The threshold decision matters: too low and legitimate users get locked out, too high and attackers get too many attempts.
+
+6. Right to Erasure and Global Privacy Law
+
+A customer asks to have their data deleted. Privacy laws in most markets give users this right. The CIAM platform is where the request lands first, but the obligation extends to every downstream system that received the user's data via token claims.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+The Three Protocols: When to Use What
+
+
+Before you open Auth0, know which protocol each persona needs. A client describes what they need and you should hear the protocol before they finish the sentence. That is what experience sounds like.
+
+
+
+OIDC
+
+
+Modern apps, mobile, single page apps. JSON tokens. The default for anything new. Answers who are you for modern systems. Alex Turner the B2C customer authenticates with OIDC.
+
+
+
+SAML
+Enterprise and partner SSO, legacy platforms. XML assertions. Answers who are you for established systems. Marcus Webb Ltd the B2B partner authenticates with SAML.
+
+
+
+OAuth
+API authorization. Not about identity, about permission. Answers what are you allowed to do. It carries scopes, not a user.
+
+
+
+
+
+
+:::CIAM Reference Architecture:::
+
+
+Same shape as the IGA pipeline from Week 1. The source and the rules are just different. Auth0 plays the platform in the middle today.
+
+
+External Users
+New Visitor, Returning Customer, Partner User
+
+
+
+CIAM Platform
+Self-Registration
+Consent Management
+Session Management
+Token Issuance
+
+
+
+Downstream Systems
+Web App, Mobile App, API Gateway
