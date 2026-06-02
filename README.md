@@ -216,6 +216,6 @@ In Summary:
 -When asked to select a region: Leave it to default
 Auth0 creates your tenant automatically and takes you to the Dashboard
 
-✅  Verify: You can see the Auth0 Dashboard at manage.auth0.com. You are logged in.
+✅  Verify: You can see the Auth0 Dashboard at manage.auth0.com. You are logged in like i just did. mine is dev-tjzm2vfebnkrsh7w
 
 
