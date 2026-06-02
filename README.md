@@ -354,11 +354,15 @@ Same shape as the IGA pipeline from Week 1. The source and the rules are just di
 
 
 External Users
+
+
 New Visitor, Returning Customer, Partner User
 
 
 
 CIAM Platform
+
+
 Self-Registration
 Consent Management
 Session Management
@@ -367,4 +371,102 @@ Token Issuance
 
 
 Downstream Systems
+
 Web App, Mobile App, API Gateway
+
+
+
+:::Let's create the OIDC Application:::
+
+
+
+-Create an application in Auth0 that represents the SimplifyTech Customer Portal. Alex Turner authenticates through this application.
+
+-Go to Applications in the left menu
+
+-Click Applications
+
+-Click Create Application
+
+-Name: SimplifyTech Customer Portal
+
+-Type: Regular Web Application
+
+-Click Create
+
+-Go to the Settings tab
+
+-Scroll to Application URIs
+
+-Allowed Callback URLs: https://jwt.io
+
+-Allowed Logout URLs: https://jwt.io
+
+-Allowed Web Origins: https://jwt.io
+
+-Click Save Changes
+
+
+
+
+
+
+
+:::SELF REGISTRATION:::
+
+
+Go through the registration flow yourself as Alex Turner. This is the journey every external user takes when they first arrive at your product.
+
+Build your test URL
+There is no built-in Try button in the current Auth0 UI. You construct the authorize URL manually. You need two values from your application:
+Your tenant domain — visible at the top left of the Auth0 Dashboard (e.g. dev-abc123.us.auth0.com)
+Your Client ID — visible on the Settings tab of the SimplifyTech Customer Portal application
+
+Build the URL using this pattern:
+
+https://YOUR-TENANT-DOMAIN/authorize
+  ?client_id=YOUR-CLIENT-ID
+  &redirect_uri=https://jwt.io
+  &response_type=id_token
+  &scope=openid%20profile%20email
+  &nonce=testvalue123
+
+
+Replace YOUR-TENANT-DOMAIN and YOUR-CLIENT-ID with your actual values. Put it all on one line with no spaces and paste it into a browser tab.
+
+Go through the registration flow
+Paste the URL into a browser tab and press Enter
+The Auth0 Universal Login page opens
+Click Sign Up
+Enter a real email address you can access
+Enter a password and click Continue
+Check your email for an Auth0 verification email
+Click the verification link in the email
+
+
+
+
+:::ADDING GOOGLE SOCIAL LOGIN:::
+
+
+
+Allow customers to sign in with Google. Standard in B2C CIAM. Reduces password friction and increases registration conversion.
+Go to Authentication in the left menu
+Click Social
+Click Create Social Connection
+Select Google / Gmail from the list — if it already exists click the three dots → Settings on google-oauth2
+Leave the Client ID and Client Secret as the Auth0 dev defaults — these work for testing without needing a Google Cloud project
+Click the Applications tab and toggle on SimplifyTech Customer Portal
+Click Save
+
+Test Google login
+The Try button is available on the social connection itself, not on the application:
+Go to Authentication → Social → Google / Gmail
+Click on the Google connection
+Click the Try button at the top right of the connection settings page
+A popup opens showing the Auth0 login screen with Continue with Google
+Click it and sign in with your own Google account
+Auth0 shows the raw user profile it received from Google
+
+
+
